@@ -1,0 +1,30 @@
+# Local overrides & secrets
+config/config.local.php
+
+# Runtime data
+database/phpbind.db
+database/phpbind.db-*
+database/logs/*
+!database/logs/.gitkeep
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Composer / vendor (if added later)
+/vendor/
+composer.lock
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# PHPUnit / coverage
+.phpunit.result.cache
+coverage/
+.phpstan/
+psalm.xml
