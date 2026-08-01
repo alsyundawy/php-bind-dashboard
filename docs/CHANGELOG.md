@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Unexpected exceptions no longer leak internal paths to the UI
 - Installer validates `database.path` and fails clearly on directory creation errors
 - Safer typing for `default_soa` / `default_ns` and `rndc` path
+- Autoloader: initialize `$baseDir`, use `str_starts_with` / `substr` (PHP 8+, PHPStan-friendly)
 
 ### Security
 - Database singleton rejects unserialization
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Unused parser variable removed
 - `// NOSONAR` annotations added only where justified for SonarQube false positives
 - PSR-12, strict types, and static-analysis readiness throughout
+- Nginx example includes full HTTPS server stub
 
 ---
 
