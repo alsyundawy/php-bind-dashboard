@@ -1,0 +1,41 @@
+# Nginx configuration example for PHP-Bind-Dashboard
+# Place in /etc/nginx/sites-available/php-bind-dashboard
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name dns.example.com;
+
+    # Redirect to HTTPS (recommended)
+    # return 301 https://$host$request_uri;
+
+    root /var/www/php-bind-dashboard/public;
+    index index.php;
+
+    # Security headers (additional)
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;  # adjust version
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Deny access to sensitive paths
+    location ~ ^/(config|database|src|scripts|templates|docs)/ {
+        deny all;
+        return 404;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    client_max_body_size 8M;
+}
