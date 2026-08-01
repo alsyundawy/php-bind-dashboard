@@ -1,98 +1,140 @@
 # PHP-Bind-Dashboard
 
-**Modern, Professional DNS Administration GUI for BIND9**
+[![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Bootstrap 5.3](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
+[![Status](https://img.shields.io/badge/status-stable-success)](docs/CHANGELOG.md)
 
-PHP-Bind-Dashboard is a lightweight, secure, and responsive web-based administration interface for BIND9 DNS servers. Built with PHP 8.2+, SQLite3, Nginx, Bootstrap 5.3, Tailwind CSS utilities, jQuery, and Font Awesome 6.7. Designed to closely resemble the look and feel of PowerDNS-Admin while providing native BIND9 zone file management.
+**Modern, professional web administration console for BIND9.**
+
+Lightweight · Secure · Responsive · Dark Mode · SQLite-powered
+
+Inspired by [PowerDNS-Admin](https://github.com/PowerDNS-Admin/PowerDNS-Admin), built natively for BIND9 zone-file workflows.
+
+---
 
 ## Features
 
-- **Zone Management**: Create, edit, delete forward and reverse zones
-- **Record Management**: Full support for A, AAAA, CNAME, MX, NS, PTR, SOA, SRV, TXT, CAA, and more
-- **User Management**: Role-based access control (Administrator, Operator, Viewer)
-- **Activity Logging**: Complete audit trail of all changes
-- **Authentication**: Local authentication with secure password hashing (Argon2id)
-- **Dark Mode**: Native support with Bootstrap 5.3 `data-bs-theme` + Tailwind dark variants
-- **Responsive Design**: Fully responsive from 480px mobile to 2K/4K displays
-- **Modern UI**: Clean, professional dashboard inspired by PowerDNS-Admin (2026 design trends)
-- **Security**: CSRF protection, prepared statements, input validation, secure headers
-- **BIND9 Integration**: Generates standard BIND zone files + `named.conf` includes, supports `rndc reload`
-- **SQLite3 Backend**: Zero external database dependency
-- **Minified Assets**: Production-ready CSS/JS
+| Area | Capability |
+|------|------------|
+| **Zones** | Create, list, view, delete forward & reverse zones |
+| **Records** | Parse & display A, AAAA, CNAME, MX, NS, PTR, SOA, SRV, TXT, CAA |
+| **Users** | Role-based access — Administrator · Operator · Viewer |
+| **Auth** | Local login, Argon2id hashing, login lockout, session regeneration |
+| **Audit** | Full activity log (who, what, when, IP) |
+| **UI** | Bootstrap 5.3 + Font Awesome 6.7, dark mode, 480px → 2K+ |
+| **Backend** | SQLite3 (zero external DB), BIND zone-file generation, optional `rndc reload` |
+| **Security** | CSRF, prepared statements, security headers, output escaping |
+
+---
 
 ## Requirements
 
-- PHP 8.2 or higher (with PDO SQLite, mbstring, json, openssl)
-- Nginx (or Apache)
-- BIND9 (named)
-- SQLite3
-- Optional: `rndc` for live reload
+- **PHP** 8.2 or 8.3+ with extensions: `pdo_sqlite`, `mbstring`, `json`, `openssl`
+- **Nginx** (recommended) or Apache
+- **BIND9** (`named`)
+- Write access for the web-server user to the zones directory and `database/`
+
+---
 
 ## Quick Start
 
 ```bash
-# Clone or copy the project
-cd /var/www
-# Ensure permissions
-chown -R www-data:www-data php-bind-dashboard
-chmod -R 755 php-bind-dashboard
-chmod -R 775 php-bind-dashboard/database php-bind-dashboard/public/uploads
+git clone https://github.com/alsyundawy/php-bind-dashboard.git
+cd php-bind-dashboard
 
-# Initialize database
+# Permissions
+sudo chown -R www-data:www-data .
+sudo chmod -R 755 .
+sudo chmod -R 775 database
+
+# Install database & default admin
 php scripts/install.php
 
-# Configure Nginx (see docs/nginx.conf.example)
-# Point document root to public/
+# Configure
+cp config/config.php config/config.local.php   # optional overrides
+# Edit config (zones_dir, named_conf, rndc_path, app.url)
+
+# Point Nginx document root to public/
+# See docs/INSTALL.md for the complete guide
 ```
 
-Default admin credentials after install:
-- Username: `admin`
-- Password: `ChangeMe123!` (change immediately)
+**Default credentials** (change immediately):
+
+| Field    | Value          |
+|----------|----------------|
+| Username | `admin`        |
+| Password | `ChangeMe123!` |
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Installation & Deploy](docs/INSTALL.md) | Full step-by-step install, Nginx, permissions, BIND integration |
+| [Configuration](docs/CONFIGURATION.md) | All config keys explained |
+| [Security](docs/SECURITY.md) | Hardening checklist & built-in protections |
+| [BIND9 Integration](docs/BIND9.md) | How zone files and `named.conf` are managed |
+| [Changelog](docs/CHANGELOG.md) | Version history |
+| [DOCNOTE](docs/DOCNOTE.md) | Behaviour notes, limitations, static-analysis notes |
+
+---
 
 ## Project Structure
 
 ```
 php-bind-dashboard/
-├── config/                 # Configuration files
-├── database/               # SQLite database + migrations
+├── config/                 # Application configuration
+├── database/               # SQLite DB + schema + logs
 ├── docs/                   # Documentation
-├── public/                 # Web root (Nginx document root)
-│   ├── assets/
-│   │   ├── css/            # Minified CSS (Bootstrap + custom + Tailwind utilities)
-│   │   ├── js/             # Minified JS (jQuery + custom)
-│   │   └── img/
-│   ├── index.php           # Front controller
-│   └── .htaccess
-├── scripts/                # CLI scripts (install, backup, etc.)
+├── public/                 # Web root (document root)
+│   ├── assets/css|js       # Minified production assets
+│   └── index.php           # Front controller
+├── scripts/                # CLI tools (install, …)
 ├── src/
-│   ├── Controllers/        # MVC Controllers
-│   ├── Models/             # Data models
-│   ├── Services/           # Business logic (BindManager, Auth, etc.)
-│   ├── Helpers/            # Utility helpers
-│   └── Middleware/         # Auth, CSRF, etc.
-├── templates/              # PHP templates (views)
-│   ├── layouts/
-│   ├── pages/
-│   └── partials/
-├── tests/
-└── vendor/                 # (if using Composer later)
+│   ├── Controllers/
+│   ├── Helpers/
+│   └── Services/           # Auth, BindManager, ActivityLogger
+└── templates/              # Views (layouts + pages)
 ```
-
-## Documentation
-
-- [Installation Guide](docs/INSTALL.md)
-- [Configuration](docs/CONFIGURATION.md)
-- [Security Best Practices](docs/SECURITY.md)
-- [BIND9 Integration](docs/BIND9.md)
-- [Changelog](docs/CHANGELOG.md)
-
-## License
-
-MIT License – free for commercial and personal use.
-
-## Credits
-
-Inspired by PowerDNS-Admin. Built for BIND9 administrators who want a modern, lightweight alternative.
 
 ---
 
-**PHP-Bind-Dashboard** – Professional BIND9 management made simple.
+## Security Highlights
+
+- Argon2id password hashing  
+- CSRF tokens on every state-changing form  
+- PDO prepared statements only  
+- Session regeneration on login + HttpOnly / SameSite cookies  
+- Login attempt lockout  
+- Strict output escaping  
+- Security response headers (X-Frame-Options, CSP baseline, …)  
+- Document root isolated to `public/`
+
+---
+
+## Static Analysis
+
+The codebase targets:
+
+- PHP_CodeSniffer (PSR-12)
+- PHPStan (level 6+)
+- Psalm
+- PHP-CS-Fixer
+- PHPLint
+
+```bash
+vendor/bin/phpstan analyse src --level=6
+vendor/bin/phpcs --standard=PSR12 src public/index.php scripts
+```
+
+---
+
+## License
+
+MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+
+---
+
+**PHP-Bind-Dashboard** — professional BIND9 management, simplified.
