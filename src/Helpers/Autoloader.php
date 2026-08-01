@@ -9,7 +9,7 @@ namespace App\Helpers;
  */
 final class Autoloader
 {
-    private static string $baseDir;
+    private static string $baseDir = '';
 
     public static function register(string $baseDir): void
     {
@@ -19,15 +19,15 @@ final class Autoloader
 
     public static function load(string $class): void
     {
-        if (strpos($class, 'App\\') !== 0) {
+        if (!str_starts_with($class, 'App\\')) {
             return;
         }
 
-        $relative = str_replace('App\\', '', $class);
+        $relative = substr($class, 4); // strip "App\\"
         $relative = str_replace('\\', DIRECTORY_SEPARATOR, $relative);
         $file = self::$baseDir . $relative . '.php';
 
-        if (is_file($file)) {
+        if (self::$baseDir !== '' && is_file($file)) {
             require $file;
         }
     }
