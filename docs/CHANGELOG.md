@@ -1,39 +1,51 @@
 # Changelog
 
-All notable changes to PHP-Bind-Dashboard are documented in this file.
+All notable changes to **PHP-Bind-Dashboard** are documented in this file.
 
-## 1.0.1 (2026-08-02)
+The format is based on [Keep a Changelog](https://keepachangelog.com/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+---
+
+## [1.0.1] — 2026-08-02
 
 ### Fixed
-- **Critical**: Zone serial generation operator-precedence bug that produced a string under `strict_types` and caused `TypeError` when creating zones (`(int) date('Ymd') . '01'` → `(int) (date('Ymd') . '01')`).
-- Zone type validation: only `master`, `slave`, `forward` are accepted.
-- Config loader now verifies that config files return arrays.
-- Database helper safely casts PDO options and fails clearly if the database directory cannot be created.
-- Auth logout cookie deletion now preserves `SameSite` attribute (PHP 7.3+ array form of `setcookie`).
-- Front controller no longer forces 404 for non-admin access to `/users` and `/settings`; controllers correctly return 403.
-- Removed redundant manual `require` of controllers (autoloader is used).
-- Removed unused variable in zone file parser.
-- Safer typing for `default_soa` / `default_ns` configuration values.
+- **Critical** — Zone serial generation operator-precedence bug under `strict_types` that caused `TypeError` when creating zones  
+  (`(int) date('Ymd') . '01'` → `(int) (date('Ymd') . '01')`)
+- Zone type restricted to `master` | `slave` | `forward`
+- Config loader validates that config files return arrays
+- Database helper safely handles PDO options and directory creation failures
+- Auth logout cookie deletion now preserves the `SameSite` attribute
+- Front controller no longer maps non-admin access to `/users` and `/settings` as 404; controllers correctly respond with 403
+- CSRF token values from `$_POST` are type-checked before validation
+- Unexpected exceptions no longer leak internal paths to the UI
+- Installer validates `database.path` and fails clearly on directory creation errors
+- Safer typing for `default_soa` / `default_ns` and `rndc` path
 
-### Security / Hardening
-- CSRF field name is explicitly cast to string.
-- Database singleton rejects unserialization.
+### Security
+- Database singleton rejects unserialization
+- CSRF field name explicitly cast to string
+- Controlled `exec` for `rndc` uses escaped arguments only
 
-### Code Quality
-- PSR-12 style, `declare(strict_types=1)`, typed properties and return types throughout.
-- Prepared for PHPStan / Psalm / PHPCS / PHP-CS-Fixer.
+### Code quality
+- Redundant controller `require` statements removed (PSR-4 autoloader)
+- Unused parser variable removed
+- `// NOSONAR` annotations added only where justified for SonarQube false positives
+- PSR-12, strict types, and static-analysis readiness throughout
 
-## 1.0.0 (2026-08-02)
+---
 
-### Initial Release
-- Modern responsive UI (Bootstrap 5.3 + custom utilities, Font Awesome 6.7, jQuery)
-- Dark mode support (system preference + manual toggle)
+## [1.0.0] — 2026-08-02
+
+### Added
+- Modern responsive UI (Bootstrap 5.3, Font Awesome 6.7, jQuery)
+- Dark mode (system preference + manual toggle)
 - Zone management (create, list, view, delete)
-- User authentication with Argon2id + lockout
-- Role-based access (admin / operator / viewer)
-- Activity logging
+- BIND9 zone-file generation and basic parser
+- User authentication with Argon2id and login lockout
+- Role-based access control (admin / operator / viewer)
+- Activity / audit logging
 - SQLite3 backend
-- BIND9 zone file generation and basic parser
-- Security headers, CSRF protection
-- Full documentation
-- Designed for screens from 480px to 2K+
+- Security headers and CSRF protection
+- Full documentation set (Install, Configuration, Security, BIND9, DOCNOTE)
+- Responsive design from 480px through 2K+ displays
